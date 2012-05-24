@@ -1,0 +1,4 @@
+*.pyc
+*.exe
+__pycache__/
+*.epp

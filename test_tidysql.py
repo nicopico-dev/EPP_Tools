@@ -1,0 +1,13 @@
+import tidysql as t
+
+def test1():
+    rawSQL = '''SELECT L.ref, cli.famille, D.hors_norme, case when U.utilisateur=NULL then '???' else U.utilisateur end acheteur,	 FM.libelle AS Flibelle, FB.code_fab, P.libelle, sum(L.qte) AS Sqte, sum(L.tt_ligne) AS Stt, sum(L.qte*L.cump) as Scump, sum(L.tt_ligne)-sum(L.qte*L.cump) as Marge, case when sum(L.tt_ligne) = 0 then 0 else convert(float, convert(float,((sum(L.tt_ligne)-sum(L.qte*L.cump)) ) / convert(float,sum(L.tt_ligne)) ))*100 end as P_Marge, sum(L.qte* isnull(L.pu_d3e_ht,0)) as Sd3e_ht FROM FactCLTEntete E, ArtAchats A, Articles P, ArtDimensions D,L_Famille FM, Fabricant FB, CdeEntete CE, UserParFamille U, FactCLTLignes_HorsEcoPart L, CdeLignes_HorsEcoPart CL , CdeLignesInfos as cli WHERE E.id_fact=L.id_fact AND E.id_cde=CE.id_cde AND L.ref=A.ref AND L.ref=P.ref AND L.rang_idcde=CL.rang AND CL.id_cde=CE.id_cde AND L.ref=D.ref AND E.date_fact between '2008/10/01' AND '2008/10/01 23:59:00' AND cli.famille=FM.code AND A.id_fab=FB.id_fab AND A.etat>' ' AND CE.etat in (24,27) AND L.qualif not in ('W','X','Y') and CE.attr & 8 = 0 AND L.type!='C' and cli.famille *= U.famille AND U.type=1 AND U.date_fin=NULL AND CE.clt_opt & ( 32+8192+32768+16777216+33554432+67108864+1073741824) = 0 AND substring(E.code_ocde,1,2)!='AL' AND cli.id_cde = CE.id_cde AND cli.rang = CL.rang GROUP BY L.ref, cli.famille ,D.hors_norme ,case when U.utilisateur=NULL then '???' else U.utilisateur end ,FM.libelle,FB.code_fab,P.libelle ORDER BY Sum(L.qte) DESC , L.ref'''
+    normSQL = t.tidySQL(rawSQL, True)
+    print(normSQL)
+    
+def test2():
+    rawSQL = '''SELECT Ex.ref, Ex.FCode as famille, D.hors_norme, isnull(U.utilisateur, '???') as acheteur, Ex.FLibelle, FB.code_fab, P.libelle, sum(Ex.qte) AS Sqte, sum(Ex.tt_ligne) AS Stt, sum(Ex.qteXcump) as Scump, sum(Ex.tt_ligne)-sum(Ex.qteXcump) as Marge, case when sum(Ex.tt_ligne) = 0 then 0 else convert(float, convert(float,((sum(Ex.tt_ligne)-sum(Ex.qteXcump)) ) / convert(float,sum(Ex.tt_ligne)) ))*100 end as P_Marge, sum(Ex.qteXpu_d3e_ht) as Sd3e_ht FROM #testExtract Ex join Articles P on P.ref = Ex.ref join ArtAchats A on A.ref = Ex.ref join ArtDimensions D on D.ref = Ex.ref join Fabricant FB on FB.id_fab = A.id_fab left join UserParFamille U on U.famille = Ex.FCode WHERE 1 = 1 AND A.etat > ' ' and (U.type is null or (U.type=1 and U.date_fin=NULL) ) GROUP BY Ex.ref, Ex.FCode, D.hors_norme , isnull(U.utilisateur, '???'), Ex.FLibelle, FB.code_fab, P.libelle ORDER BY Sum(Ex.qte) DESC , Ex.ref'''
+    normSQL = t.tidySQL(rawSQL, True)
+    print(normSQL)
+
+test2()
