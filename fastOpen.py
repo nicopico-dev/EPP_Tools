@@ -45,6 +45,8 @@ class TkFastOpen(tk.Frame):
         self.listCandidates = tk.Listbox(self, selectmode=tk.BROWSE, activestyle="none")
         self.listCandidates.configure(font=("Courier New", "8"))
         self.listCandidates.bind("<Double-Button-1>", self.handle_Ok)
+        self.listCandidates.bind("<Enter>", self.handle_Ok)
+        self.listCandidates.bind("<Return>", self.handle_Ok)
         self.listCandidates.grid(row=1, column=0, columnspan=2, sticky="nsew")
         
         # Bouton Ok
@@ -57,8 +59,6 @@ class TkFastOpen(tk.Frame):
 
         # Global keyboard events
         self.bind_all("<Escape>", self.handle_Escape)
-        self.bind("<Enter>", self.handle_Ok)
-        self.bind("<Return>", self.handle_Ok)
 
     def set_geometry(self, wapp, happ):
         # Centre l'application sur l'ecran
