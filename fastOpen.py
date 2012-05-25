@@ -7,6 +7,10 @@ import tkinter.ttk as ttk
 
 import epp_utils as epp
 
+def isValidCandidate(searchTerm, candidate):
+    #filename = os.path.basename(candidate)
+    return searchTerm in candidate
+
 class TkFastOpen(tk.Frame):
     def __init__(self, master=None, title='Fast Open', width=800, height=300):
         self.availableFiles = []
@@ -100,10 +104,6 @@ class TkFastOpen(tk.Frame):
     def quit(self, event=None):
         epp.log("QUIT")
         self.master.quit()
-
-def isValidCandidate(searchTerm, candidate):
-    filename = os.path.basename(candidate)
-    return searchTerm in filename
 
 def main(argv):
     parser = optparse.OptionParser()
