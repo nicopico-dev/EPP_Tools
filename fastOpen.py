@@ -45,7 +45,6 @@ class TkFastOpen(tk.Frame):
         self.listCandidates = tk.Listbox(self, selectmode=tk.BROWSE, activestyle="none")
         self.listCandidates.configure(font=("Courier New", "8"))
         self.listCandidates.bind("<Double-Button-1>", self.handle_Ok)
-        self.listCandidates.bind("<Enter>", self.handle_Ok)
         self.listCandidates.bind("<Return>", self.handle_Ok)
         self.listCandidates.grid(row=1, column=0, columnspan=2, sticky="nsew")
         
