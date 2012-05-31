@@ -9,7 +9,7 @@ import epp_utils as epp
 
 def isValidCandidate(searchTerm, candidate):
     #filename = os.path.basename(candidate)
-    return searchTerm in candidate
+    return searchTerm.lower() in candidate.lower()
 
 class TkFastOpen(tk.Frame):
     def __init__(self, master=None, title='Fast Open', width=800, height=300):
