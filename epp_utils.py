@@ -179,9 +179,10 @@ def openWithEPP(filename):
     """
     Ouvre le fichier specifie dans EditPad
     """
-    driveLetter = os.path.splitdrive(os.getcwd())[0]
-    eppPath = driveLetter + r"\_Portable_Apps\PortableApps\EditPadPro7\EditPadPro7.exe"
-    subprocess.call([eppPath, filename])
+    tools_path = os.path.dirname(os.path.realpath(__file__))
+    epp_path = os.path.normpath(os.path.join(tools_path, ".."))
+    epp_exe = os.path.join(epp_path, "EditPadPro7.exe")
+    subprocess.call([epp_exe, filename])
 
 if __name__ == "__main__":
     openWithEPP(r"F:\WORK\CROSS\Stryker_eNews\Maquettes\login.html")

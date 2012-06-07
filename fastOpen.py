@@ -4,6 +4,7 @@ import optparse
 import os.path
 import tkinter as tk
 import tkinter.ttk as ttk
+import fnmatch
 
 import epp_utils as epp
 
@@ -41,6 +42,7 @@ class TkFastOpen(tk.Frame):
         self.listCandidates = tk.Listbox(self, selectmode=tk.BROWSE, activestyle="none")
         self.listCandidates.configure(font=("Courier New", "8"))
         self.listCandidates.bind("<Double-Button-1>", self.handle_Ok)
+        self.listCandidates.bind("<Return>", self.handle_Ok)
         self.listCandidates.grid(row=1, column=0, columnspan=2, sticky="nsew")
         
         # Bouton Ok
@@ -53,8 +55,6 @@ class TkFastOpen(tk.Frame):
 
         # Global keyboard events
         self.bind_all("<Escape>", self.handle_Escape)
-        self.bind("<Enter>", self.handle_Ok)
-        self.bind("<Return>", self.handle_Ok)
 
     def set_geometry(self, wapp, happ):
         # Centre l'application sur l'ecran
@@ -86,7 +86,7 @@ class TkFastOpen(tk.Frame):
     def refreshCandidates(self, event=None):
         self.listCandidates.delete(0, tk.END)
         searchTerm = self.textInput.get()
-        for f in [f for f in self.availableFiles if isValidCandidate(searchTerm, f)]:
+        for f in fnmatch.filter(self.availableFiles, "*" + searchTerm + "*"):
             self.listCandidates.insert(tk.END, f)
     
     def focusToList(self, event=None):
@@ -100,10 +100,6 @@ class TkFastOpen(tk.Frame):
     def quit(self, event=None):
         epp.log("QUIT")
         self.master.quit()
-
-def isValidCandidate(searchTerm, candidate):
-    filename = os.path.basename(candidate)
-    return searchTerm in filename
 
 def main(argv):
     parser = optparse.OptionParser()
