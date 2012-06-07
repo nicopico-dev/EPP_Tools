@@ -4,12 +4,9 @@ import optparse
 import os.path
 import tkinter as tk
 import tkinter.ttk as ttk
+import fnmatch
 
 import epp_utils as epp
-
-def isValidCandidate(searchTerm, candidate):
-    #filename = os.path.basename(candidate)
-    return searchTerm.lower() in candidate.lower()
 
 class TkFastOpen(tk.Frame):
     def __init__(self, master=None, title='Fast Open', width=800, height=300):
@@ -89,7 +86,7 @@ class TkFastOpen(tk.Frame):
     def refreshCandidates(self, event=None):
         self.listCandidates.delete(0, tk.END)
         searchTerm = self.textInput.get()
-        for f in [f for f in self.availableFiles if isValidCandidate(searchTerm, f)]:
+        for f in fnmatch.filter(self.availableFiles, "*" + searchTerm + "*"):
             self.listCandidates.insert(tk.END, f)
     
     def focusToList(self, event=None):
