@@ -132,5 +132,4 @@ def main(argv):
         sys.exit(1)
 
 if __name__ == "__main__":
-    #main(sys.argv[1:])
-    main(['-p', r'\\nicolas-virtual\dansmacave\dmc.epp', '-s', 'inc_*'])
+    main(sys.argv[1:])
