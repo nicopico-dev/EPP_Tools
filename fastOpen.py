@@ -1,17 +1,18 @@
 # python fastOpen.py -p "%PROJECTFILE%"
 import sys
 import optparse
-import os.path
 import tkinter as tk
-import tkinter.ttk as ttk
 import fnmatch
 
 import epp_utils as epp
 
+# TODO CamelCase abbreviation support
+
 class TkFastOpen(tk.Frame):
-    def __init__(self, master=None, title='Fast Open', width=800, height=300):
-        self.availableFiles = []
+    def __init__(self, master=None, title='Fast Open', width=800, height=300, availableFiles='', selection=''):
+        self.availableFiles = [] if availableFiles == '' else availableFiles
         self.candidates = []
+        self.selection = selection
         self.chosenFile = None
 
         tk.Frame.__init__(self, master)
@@ -20,9 +21,12 @@ class TkFastOpen(tk.Frame):
         self.master.title(title)
         self.set_geometry(width, height)
 
+        if self.selection != '':
+            self.refreshCandidates()
+
     def create_widgets(self):
         # Strechable UI
-        top=self.winfo_toplevel()
+        top = self.winfo_toplevel()
         top.rowconfigure(0, weight=1)
         top.columnconfigure(0, weight=1)
         
@@ -36,6 +40,7 @@ class TkFastOpen(tk.Frame):
         self.textInput.grid(row=0, column=0, columnspan=2, sticky="nsew")
         self.textInput.bind("<KeyRelease>", self.refreshCandidates)
         self.textInput.bind("<Down>", self.focusToList)
+        self.textInput.insert(0, self.selection)
         self.textInput.focus()
 
         # List of candidates
@@ -97,33 +102,35 @@ class TkFastOpen(tk.Frame):
     def focusToTextInput(self, event=None):
         self.textInput.focus()
 
-    def quit(self, event=None):
+    def quit(self):
         epp.log("QUIT")
         self.master.quit()
 
 def main(argv):
     parser = optparse.OptionParser()
-    parser.add_option("-p","--project",action="store",type="string",dest="project",help="Project file")
-    
+    parser.add_option("-p", "--project", action="store", type="string", dest="project", help="Project file")
+    parser.add_option("-s", "--selection", action="store", type="string", dest="selection", help="Current selection")
+
+    parser.set_defaults(selection="")
     (options, args) = parser.parse_args(argv)
     
-    epp.log("project file: %s" % (options.project))
+    epp.log("project file: {0:>s}, current selection: {1:>s}".format(options.project, options.selection))
     
     if options.project:
         files = epp.getProjectFiles(options.project)
         
-        app = TkFastOpen()
-        app.availableFiles = files
+        app = TkFastOpen(availableFiles=files, selection=options.selection)
         app.mainloop()
     
         if app.chosenFile != None:
             # Open the file with EPP
             epp.openWithEPP(app.chosenFile)
         
-    else: 
+    else:
         # On provoque une erreur
-        parser.error('project') 
+        if not options.project: parser.error('project')
         sys.exit(1)
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    #main(sys.argv[1:])
+    main(['-p', r'\\nicolas-virtual\dansmacave\dmc.epp', '-s', 'inc_*'])
