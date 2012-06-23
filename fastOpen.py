@@ -1,4 +1,4 @@
-# python fastOpen.py -p "%PROJECTFILE%"
+# python fastOpen.py -p "%PROJECTFILE%" -s "%WORD%"
 import sys
 import optparse
 import tkinter as tk
