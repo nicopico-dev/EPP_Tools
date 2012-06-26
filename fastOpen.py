@@ -3,10 +3,10 @@ import sys
 import optparse
 import tkinter as tk
 import fnmatch
+import os.path
+import re
 
 import epp_utils as epp
-
-# TODO CamelCase abbreviation support
 
 class TkFastOpen(tk.Frame):
     def __init__(self, master=None, title='Fast Open', width=800, height=300, availableFiles='', selection=''):
@@ -91,7 +91,7 @@ class TkFastOpen(tk.Frame):
     def refreshCandidates(self, event=None):
         self.listCandidates.delete(0, tk.END)
         searchTerm = self.textInput.get()
-        for f in fnmatch.filter(self.availableFiles, "*" + searchTerm + "*"):
+        for f in self.filter(self.availableFiles, searchTerm):
             self.listCandidates.insert(tk.END, f)
     
     def focusToList(self, event=None):
@@ -105,6 +105,23 @@ class TkFastOpen(tk.Frame):
     def quit(self):
         epp.log("QUIT")
         self.master.quit()
+
+    def filter(self, availableFiles, searchTerm):
+        candidates = []
+        for f in availableFiles:
+            if self._matchWildcards(f, searchTerm):
+                candidates.append(f)
+
+        return candidates
+
+    def _matchWildcards(self, f, searchTerm):
+        return fnmatch.fnmatch(f, "*" + searchTerm + "*")
+
+    def _matchCamelAbbr(self, f, searchTerm):
+        basename = os.path.splitext(os.path.basename(f))[0]
+        currAbbr = re.sub('[^A-Z]', '', basename)
+        return searchTerm == currAbbr
+
 
 def main(argv):
     parser = optparse.OptionParser()
